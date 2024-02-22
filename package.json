@@ -1,0 +1,38 @@
+{
+  "name": "@byyuurin/nitro-openapi",
+  "type": "module",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs"
+    }
+  },
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["*.d.ts", "dist"],
+  "scripts": {
+    "build": "unbuild",
+    "prepare": "nitropack prepare",
+    "dev": "nitropack dev playground",
+    "dev:build": "nitropack build playground",
+    "dev:preview": "node playground/.output/server/index.mjs",
+    "lint": "eslint .",
+    "test": "vitest",
+    "stub": "unbuild --stub"
+  },
+  "dependencies": {
+    "defu": "^6.1.4",
+    "openapi-typescript": "^6.7.4"
+  },
+  "devDependencies": {
+    "@byyuurin/eslint-config": "^1.0.1",
+    "nitropack": "latest",
+    "unbuild": "^2.0.0",
+    "vitest": "^1.3.0"
+  },
+  "resolutions": {
+    "@byyuurin/nitro-openapi": "link:."
+  }
+}
