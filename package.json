@@ -2,7 +2,13 @@
   "name": "@byyuurin/nitro-openapi",
   "type": "module",
   "version": "0.0.1",
+  "private": false,
   "license": "MIT",
+  "homepage": "https://github.com/byyuurin/nitro-openapi",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/byyuurin/nitro-openapi.git"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -23,7 +29,7 @@
     "dev:preview": "node playground/.output/server/index.mjs",
     "lint": "eslint .",
     "test": "vitest",
-    "release": "bumpp && pnpm release",
+    "release": "bumpp && pnpm publish",
     "stub": "unbuild --stub"
   },
   "dependencies": {
