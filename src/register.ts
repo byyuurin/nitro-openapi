@@ -1,6 +1,6 @@
 import defu from 'defu'
 import type { OpenAPI3, ParameterObject, PathItemObject } from 'openapi-typescript'
-import type { MaybeReference, OpenApiRegisterConfig, PathOperationItem, PathOperations } from './types'
+import type { MaybeReference, OpenApiRegisterConfig, PathOperationItem, PathOperations, ReferenceRef } from './types'
 
 export function createOpenApiRegister<T extends OpenApiRegisterConfig = OpenApiRegisterConfig>(
   defaults = {} as T,
@@ -9,7 +9,7 @@ export function createOpenApiRegister<T extends OpenApiRegisterConfig = OpenApiR
 
   function register(
     route: string,
-    routeOperation: MaybeReference<PathOperationItem<T>>,
+    routeOperation: MaybeReference<PathOperationItem<T>, ReferenceRef<Required<T['components']>>>,
     method: keyof PathOperations = 'get',
   ) {
     const _route = normalizeRoute(route)

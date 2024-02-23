@@ -1,4 +1,8 @@
-import type { OpenAPI3, OperationObject, PathItemObject, ReferenceObject, SecurityRequirementObject } from 'openapi-typescript'
+import type { ComponentsObject, OpenAPI3, OperationObject, PathItemObject, ReferenceObject, SecurityRequirementObject } from 'openapi-typescript'
+
+export type ReferenceRef<T extends ComponentsObject> = {
+  [K in keyof T]: T[K] extends object ? `#/components/${K & string}/${keyof T[K] & string}` : never
+}[keyof T]
 
 export type ReferenceExtended<T extends string> = Omit<ReferenceObject, '$ref'> & { $ref: T }
 export type MaybeReference<T, R extends string = string> = T | ReferenceExtended<R>

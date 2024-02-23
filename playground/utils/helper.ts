@@ -1,5 +1,6 @@
 import type { InternalApi } from 'nitropack'
 import type { OperationObject } from 'openapi-typescript'
+import type { configExtends } from '../plugins/swagger'
 import { register } from '../plugins/swagger'
 import type { ApiJsonModel, ApiJsonResponse, ApiRouteMetaOptions } from '../types'
 
@@ -15,7 +16,7 @@ export function createApiResponse<DataT = undefined>(
 
 export function defineApiRouteMeta<P = Record<string, unknown>>(
   route: keyof InternalApi,
-  options: ApiRouteMetaOptions<P> = {},
+  options: ApiRouteMetaOptions<P, typeof configExtends.components> = {},
 ) {
   const { method = 'get', response, ...defaults } = options
 

@@ -23,8 +23,8 @@
   ],
   "scripts": {
     "build": "unbuild",
-    "prepare": "nitropack prepare",
     "dev": "nitropack dev playground",
+    "dev:prepare": "nitropack prepare playground",
     "dev:build": "nitropack build playground",
     "dev:preview": "node playground/.output/server/index.mjs",
     "lint": "eslint .",

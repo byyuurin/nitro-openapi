@@ -1,5 +1,5 @@
-import type { MaybeReference, PathOperationMethod } from '@byyuurin/nitro-openapi'
-import type { OperationObject, ParameterObject, RequestBodyObject, SchemaObject } from 'openapi-typescript'
+import type { MaybeReference, PathOperationMethod, ReferenceRef } from '@byyuurin/nitro-openapi'
+import type { ComponentsObject, OperationObject, ParameterObject, SchemaObject } from 'openapi-typescript'
 
 export interface ApiJsonModel<T = undefined> {
   code: number
@@ -11,9 +11,9 @@ export type ApiJsonResponse<T extends ApiJsonModel<unknown>> = Omit<T, T['data']
 
 export type ApiResponseModel<T> = Record<keyof T, SchemaObject>
 
-export interface ApiRouteMetaOptions<T> extends Omit<OperationObject, 'parameters' | 'responses'> {
+export interface ApiRouteMetaOptions<T, ComponentsT extends ComponentsObject = ComponentsObject> extends Omit<OperationObject, 'parameters' | 'responses'> {
   /** @default "get" */
   method?: PathOperationMethod
-  parameters?: (ParameterObject & { name: keyof T })[]
-  response?: MaybeReference<SchemaObject>
+  parameters?: MaybeReference<ParameterObject & { name: keyof T }, ReferenceRef<ComponentsT>>[]
+  response?: MaybeReference<SchemaObject, ReferenceRef<ComponentsT>>
 }
