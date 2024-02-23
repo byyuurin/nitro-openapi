@@ -3,13 +3,13 @@ import type { OpenAPI3, ParameterObject, PathItemObject } from 'openapi-typescri
 import type { MaybeReference, OpenApiRegisterConfig, PathOperationItem, PathOperations, ReferenceRef } from './types'
 
 export function createOpenApiRegister<T extends OpenApiRegisterConfig = OpenApiRegisterConfig>(
-  defaults = {} as T,
+  defaults: T,
 ) {
   const { paths = {}, components = {}, security = [], servers = [], info, tags = [] } = defaults
 
   function register(
     route: string,
-    routeOperation: MaybeReference<PathOperationItem<T>, ReferenceRef<Required<T['components']>>>,
+    routeOperation: MaybeReference<PathOperationItem<T>, ReferenceRef<T>>,
     method: keyof PathOperations = 'get',
   ) {
     const _route = normalizeRoute(route)
