@@ -9,18 +9,9 @@ defineApiRouteMeta(
   {
     description: '# GET Example',
     summary: 'Get data by id',
-    response: toExampleSchema<ResponseType>(
-      {
-        index: 0,
-        text: 'text',
-        status: false,
-      },
-      {
-        index: 'Number value',
-        text: 'Text value',
-        status: 'true or false',
-      },
-    ),
+    response: {
+      $ref: '#/components/schemas/ExampleData',
+    },
   },
 )
 

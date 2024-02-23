@@ -2,8 +2,12 @@ import { expect, it } from 'vitest'
 import { resolveSchemaObject, toExampleSchema } from './utils'
 
 it('check transform cases', () => {
-  expect(resolveSchemaObject(0)).toMatchInlineSnapshot(`
+  expect(resolveSchemaObject(0, { enum: [0, 1] })).toMatchInlineSnapshot(`
     {
+      "enum": [
+        0,
+        1,
+      ],
       "example": 0,
       "type": "number",
     }
@@ -101,9 +105,13 @@ it('check transform cases', () => {
 })
 
 it('transform example to schema object', () => {
-  expect(toExampleSchema('foo', 'string value')).toMatchInlineSnapshot(`
+  expect(toExampleSchema('foo', 'string value', { enum: ['foo', 'bar'] })).toMatchInlineSnapshot(`
     {
       "description": "string value",
+      "enum": [
+        "foo",
+        "bar",
+      ],
       "example": "foo",
       "type": "string",
     }
@@ -125,11 +133,12 @@ it('transform example to schema object', () => {
     }
   `)
 
-  expect(toExampleSchema({ foo: 'bar' }, { foo: 'foo description' })).toMatchInlineSnapshot(`
+  expect(toExampleSchema({ foo: 'bar' }, { foo: 'foo description' }, { nullable: true })).toMatchInlineSnapshot(`
     {
       "example": {
         "foo": "bar",
       },
+      "nullable": true,
       "properties": {
         "foo": {
           "description": "foo description",
@@ -157,6 +166,7 @@ it('transform example to schema object', () => {
   expect(toExampleSchema(
     [{ str: 'string', num: 100, boo: true }],
     { str: 'string', num: 'number', boo: 'boolean' },
+    { nullable: false },
   )).toMatchInlineSnapshot(`
     {
       "items": {
@@ -165,6 +175,7 @@ it('transform example to schema object', () => {
           "num": 100,
           "str": "string",
         },
+        "nullable": false,
         "properties": {
           "boo": {
             "description": "boolean",

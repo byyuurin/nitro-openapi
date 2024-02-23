@@ -1,8 +1,15 @@
 import type { OpenAPI3, OperationObject, PathItemObject, ReferenceObject, SecurityRequirementObject } from 'openapi-typescript'
 
-export type ReferenceSchema<T> = Omit<ReferenceObject, '$ref'> & { $ref: T }
+export type ReferenceExtended<T extends string> = Omit<ReferenceObject, '$ref'> & { $ref: T }
+export type MaybeReference<T, R extends string = string> = T | ReferenceExtended<R>
 
-export type MaybeReference<T, R = string> = T | ReferenceSchema<R>
+export type MaybeValueOrObject<ExampleT, ContentT> = ExampleT extends number | string | boolean
+  ? ContentT
+  : ExampleT extends (infer ArrayT)[]
+    ? ContentT | MaybeValueOrObject<ArrayT, ContentT>
+    : ExampleT extends Record<infer PropertyT, unknown>
+      ? { [key in PropertyT]?: ContentT } | ContentT
+      : ContentT
 
 export type PathOperations = Omit<PathItemObject, 'servers' | 'parameters' | `x-${string}`>
 export type PathOperationMethod = keyof PathOperations

@@ -14,7 +14,7 @@ defineApiRouteMeta<RequestType>(
   '/api/example/list',
   {
     description: '# Search Example',
-    summary: 'example list',
+    summary: 'Get data list',
     parameters: [
       {
         name: 'page',
@@ -38,18 +38,12 @@ defineApiRouteMeta<RequestType>(
         description: 'Search keyword',
       },
     ],
-    response: toExampleSchema<ResponseType[]>(
-      [{
-        index: 0,
-        text: 'text',
-        status: false,
-      }],
-      {
-        index: 'Number value',
-        text: 'Text value',
-        status: 'true or false',
+    response: {
+      type: 'array',
+      items: {
+        $ref: '#/components/schemas/ExampleData',
       },
-    ),
+    },
   },
 )
 

@@ -20,7 +20,7 @@ export function defineApiRouteMeta<P = Record<string, unknown>>(
   const { method = 'get', response, ...defaults } = options
 
   if (response)
-    response.description ??= '回傳內容'
+    response.description ??= 'Response content'
 
   const operationObject: OperationObject = {
     ...defaults,
@@ -32,8 +32,8 @@ export function defineApiRouteMeta<P = Record<string, unknown>>(
             schema: {
               type: 'object',
               properties: {
-                code: { type: 'number', description: '狀態碼' },
-                message: { type: 'string', description: '狀態說明' },
+                code: { type: 'number', description: 'Response code' },
+                message: { type: 'string', description: 'Response description' },
                 ...response ? { data: response } : {},
               },
             },

@@ -23,6 +23,19 @@ export const { register, merge, configExtends } = createOpenApiRegister({
         scheme: 'bearer',
       },
     },
+    schemas: {
+      ExampleData: toExampleSchema({
+        index: 0,
+        text: 'text',
+        status: false,
+      }, {
+        index: 'Number value',
+        text: 'Text value',
+        status: 'true or false',
+      }, {
+        description: 'Example data',
+      }),
+    } as const,
   },
 })
 
@@ -35,10 +48,17 @@ export default defineNitroPlugin((nitro) => {
   nitro.hooks.hook('beforeResponse', (event, context) => {
     // config adjust
     if (event.path.endsWith('swagger')) {
-      // let body = context.body as string
-      // body = body.replace(/(\s*)(url:\s"[^"]+")/, '$1docExpansion: "none",$1$2')
-      // context.body = body
+      let body = context.body as string
+
+      const settings = Object.entries({
+        // docExpansion: 'none', // collapse all groups
+        // defaultModelsExpandDepth: -1, // hide schemas
+      }).map(([k, v]) => `$1${k}: ${typeof v === 'string' ? `"${v}"` : v}`).join('')
+
+      body = body.replace(/(\s*)(url:\s"[^"]+")/, `${settings ? `${settings},` : ''}$1$2`)
       // console.log(body.match(/(?:SwaggerUIBundle\(([^;]+)\))/)?.[1])
+
+      context.body = body
       return
     }
 
