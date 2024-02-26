@@ -62,8 +62,8 @@ function normalizeRoute(_route: string) {
 
 function mergeConfig(
   defaults: Partial<OpenAPI3>,
-  appends: Partial<OpenAPI3>,
-) {
+  appends: OpenApiRegisterConfig,
+): Partial<OpenAPI3> {
   const methods = new Set<(keyof PathOperations)>(['delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace'])
   const { info } = appends
   const { paths = {} } = defaults
