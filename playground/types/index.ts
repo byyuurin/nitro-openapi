@@ -7,7 +7,6 @@ import type {
   SchemaExtended,
 } from '@byyuurin/nitro-openapi'
 import type {
-  ParameterObject,
   SchemaObject,
 } from 'openapi-typescript'
 
@@ -21,12 +20,8 @@ export type ApiJsonResponse<T extends ApiJsonModel<unknown>> = Omit<T, T['data']
 
 export type ApiResponseModel<T> = Record<keyof T, SchemaObject>
 
-export interface ApiRouteMetaOptions<T, ConfigT extends OpenApiRegisterConfig = OpenApiRegisterConfig> extends Omit<PathOperationItem<ConfigT>, 'parameters' | 'responses'> {
+export interface ApiRouteMetaOptions<ConfigT extends OpenApiRegisterConfig = OpenApiRegisterConfig> extends Omit<PathOperationItem<ConfigT>, 'responses'> {
   /** @default "get" */
   method?: PathOperationMethod
-  parameters?: MaybeReference<ParameterObject & {
-    name: keyof T
-    schema?: SchemaExtended<ReferenceRef<ConfigT>>
-  }, ReferenceRef<ConfigT>>[]
   response?: MaybeReference<SchemaExtended<ReferenceRef<ConfigT>>, ReferenceRef<ConfigT>>
 }
