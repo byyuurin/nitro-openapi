@@ -1,10 +1,11 @@
-import type { PathOperationItem, PathOperationMethod } from '@byyuurin/nitro-openapi'
 import type { InternalApi } from 'nitropack'
 import type { configExtends } from '../plugins/swagger'
-import { register } from '../plugins/swagger'
-import type { ApiJsonModel, ApiJsonResponse, ApiRouteMetaOptions } from '../types'
+import { defineOperation, register } from '../plugins/swagger'
+import type { ApiJsonModel, ApiJsonResponse, ApiRouteMeta } from '../types'
 
 export { resolveSchemaObject, toExampleSchema } from '@byyuurin/nitro-openapi'
+
+export { defineOperation }
 
 export function createApiResponse<DataT = undefined>(
   data?: DataT,
@@ -16,14 +17,14 @@ export function createApiResponse<DataT = undefined>(
 
 export function defineApiRouteMeta(
   route: keyof InternalApi,
-  options: ApiRouteMetaOptions<typeof configExtends> = {},
+  options: ApiRouteMeta<typeof configExtends> = {},
 ) {
   const { method, response, ...defaults } = options
 
   if (response)
     response.description ??= 'Response content'
 
-  const operationObject: PathOperationItem<typeof configExtends> = {
+  const operation = defineOperation({
     ...defaults,
     responses: {
       200: {
@@ -42,7 +43,7 @@ export function defineApiRouteMeta(
         },
       },
     },
-  }
+  })
 
-  register(route, operationObject, method)
+  register(route, operation, method)
 }

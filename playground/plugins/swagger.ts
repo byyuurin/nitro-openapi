@@ -1,7 +1,7 @@
 import { createOpenApiRegister } from '@byyuurin/nitro-openapi'
 import type { OpenAPI3 } from 'openapi-typescript'
 
-export const { register, merge, configExtends } = createOpenApiRegister({
+export const { defineOperation, register, merge, configExtends } = createOpenApiRegister({
   info: {
     title: 'Swagger API',
     version: 'dev',
