@@ -6,6 +6,7 @@ import type {
   PathItemObject,
   ReferenceObject,
   RequestBodyObject,
+  ResponseObject,
   SchemaObject,
   SecurityRequirementObject,
 } from 'openapi-typescript'
@@ -47,7 +48,15 @@ export type MaybeValueOrObject<ExampleT, ContentT> = ExampleT extends number | s
 export type PathOperations = Omit<PathItemObject, 'servers' | 'parameters' | `x-${string}`>
 export type PathOperationMethod = keyof PathOperations
 
-export type PathOperationItem<T extends OpenApiRegisterConfig> = Omit<OperationObject, 'tags' | 'parameters' | 'requestBody' | 'security'> & {
+export type PathResponse<RefT extends string> = Omit<ResponseObject, 'content'> & {
+  content?: {
+    [contentType: string]: Omit<MediaTypeObject, 'schema'> & {
+      schema?: MaybeReference<SchemaExtended<RefT>, RefT>
+    }
+  }
+}
+
+export type PathOperationItem<T extends OpenApiRegisterConfig> = Omit<OperationObject, 'tags' | 'parameters' | 'requestBody' | 'responses' | 'security'> & {
   tags?:
   T extends { tags: infer Tags }
     ? Tags extends ({ name: infer Tag })[]
@@ -64,6 +73,12 @@ export type PathOperationItem<T extends OpenApiRegisterConfig> = Omit<OperationO
       [contentType: string]: MaybeReference<MediaTypeObject, ReferenceRef<T>>
     }
   }, ReferenceRef<T>>
+
+  responses?: {
+    [responseCode: string]: MaybeReference<PathResponse<ReferenceRef<T>>, ReferenceRef<T>>
+  } & {
+    default?: MaybeReference<PathResponse<ReferenceRef<T>>, ReferenceRef<T>>
+  }
 
   security?:
   T extends { components: infer C }

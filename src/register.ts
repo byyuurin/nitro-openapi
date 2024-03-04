@@ -7,6 +7,8 @@ export function createOpenApiRegister<T extends OpenApiRegisterConfig = OpenApiR
 ) {
   const { paths = {}, components = {}, security = [], servers = [], info, tags = [] } = defaults
 
+  const defineOperation = (operation: PathOperationItem<T>) => operation
+
   function register(
     route: string,
     routeOperation: MaybeReference<PathOperationItem<T>, ReferenceRef<T>>,
@@ -43,6 +45,7 @@ export function createOpenApiRegister<T extends OpenApiRegisterConfig = OpenApiR
       info,
       tags,
     } as T,
+    defineOperation,
     register,
     merge,
   }

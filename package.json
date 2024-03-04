@@ -12,7 +12,8 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     }
   },
   "main": "./dist/index.mjs",
@@ -37,11 +38,11 @@
     "openapi-typescript": "^6.7.4"
   },
   "devDependencies": {
-    "@byyuurin/eslint-config": "^1.0.1",
-    "bumpp": "^9.3.0",
+    "@byyuurin/eslint-config": "^1.0.2",
+    "bumpp": "^9.3.1",
     "nitropack": "latest",
     "unbuild": "^2.0.0",
-    "vitest": "^1.3.0"
+    "vitest": "^1.3.1"
   },
   "resolutions": {
     "@byyuurin/nitro-openapi": "link:."
