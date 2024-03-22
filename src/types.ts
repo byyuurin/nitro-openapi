@@ -41,9 +41,9 @@ export type MaybeValueOrObject<ExampleT, ContentT> = ExampleT extends number | s
   ? ContentT
   : ExampleT extends (infer ArrayT)[]
     ? ContentT | MaybeValueOrObject<ArrayT, ContentT>
-    : ExampleT extends Record<infer PropertyT, unknown>
-      ? { [key in PropertyT]?: ContentT } | ContentT
-      : ContentT
+    : ExampleT extends object
+      ? { [key in keyof ExampleT]?: ContentT } | ContentT
+      : unknown
 
 export type PathOperations = Omit<PathItemObject, 'servers' | 'parameters' | `x-${string}`>
 export type PathOperationMethod = keyof PathOperations
