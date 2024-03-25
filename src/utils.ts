@@ -98,7 +98,7 @@ export function toExampleSchema<T = any>(
   schema.properties = Object.fromEntries(Object.entries(schema.properties!)
     .map(([p, item]) => [p, {
       ...item,
-      ...typeof description === 'object' ? { description: description?.[p] } : {},
+      ...typeof description === 'object' ? { description: (description as any)?.[p] } : {},
     }]))
 
   return schema
