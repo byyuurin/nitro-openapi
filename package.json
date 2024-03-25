@@ -30,7 +30,7 @@
     "dev:preview": "node playground/.output/server/index.mjs",
     "lint": "eslint .",
     "test": "vitest",
-    "release": "bumpp && pnpm publish",
+    "release": "pnpm build && bumpp && pnpm publish",
     "stub": "unbuild --stub"
   },
   "dependencies": {
