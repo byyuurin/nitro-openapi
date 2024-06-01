@@ -55,16 +55,16 @@ Or custom register
 
 ```ts
 // utils/swagger.ts
-import type { PathOperationItem, PathOperationMethod } from '@byyuurin/nitro-openapi'
+import type { OperationType, PathOperation } from '@byyuurin/nitro-openapi'
 import type { InternalApi } from 'nitropack'
 import type { configExtends } from '../plugins/swagger'
 import { register } from '../plugins/swagger'
 
-type RouteMeta = PathOperationItem<typeof configExtends> & {
-  method?: PathOperationMethod
+type RouteMeta = OperationType<typeof configExtends> & {
+  method?: keyof PathOperation
 }
 
-export function defineRouteMeta(
+export function defineApiRouteMeta(
   route: keyof InternalApi,
   meta: RouteMeta,
 ) {
@@ -78,7 +78,7 @@ Then use the register
 ```ts
 // route/**/*.ts
 
-defineRouteMeta('/api/...', {
+defineApiRouteMeta('/api/...', {
   /* ... */
 })
 
