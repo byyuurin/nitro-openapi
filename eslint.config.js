@@ -1,3 +1,5 @@
 import byyuurin from '@byyuurin/eslint-config'
 
-export default byyuurin()
+export default byyuurin({
+  formatters: true,
+})

@@ -7,8 +7,8 @@ export const { defineOperation, register, merge, configExtends } = createOpenApi
     version: 'dev',
   },
   tags: [
-    { name: 'Internal', description: 'Internal Routes' },
     { name: 'API Routes', description: 'All API list' },
+    { name: 'Internal', description: 'Internal Routes' },
   ] as const,
   components: {
     securitySchemes: {
@@ -53,10 +53,13 @@ export default defineNitroPlugin((nitro) => {
       const settings = Object.entries({
         // docExpansion: 'none', // collapse all groups
         // defaultModelsExpandDepth: -1, // hide schemas
-      }).map(([k, v]) => `$1${k}: ${typeof v === 'string' ? `"${v}"` : v}`).join('')
+      }).map(([k, v]) => `$1${k}: ${typeof v === 'string' ? `"${v}"` : JSON.stringify(v)}`).join('')
 
-      body = body.replace(/(\s*)(url:\s"[^"]+")/, `${settings ? `${settings},` : ''}$1$2`)
+      body = body.replace(/(\s*)(url:\s"[^"]+")/, `${settings}${settings ? ',' : ''}$1$2`)
       // console.log(body.match(/(?:SwaggerUIBundle\(([^;]+)\))/)?.[1])
+
+      // wait for Nitro update
+      body = body.replace(/swagger-ui-dist@\^4/g, 'swagger-ui-dist@^5')
 
       context.body = body
       return
@@ -66,7 +69,23 @@ export default defineNitroPlugin((nitro) => {
       return
 
     // merge config
-    const config = context.body as OpenAPI3
-    context.body = merge(config)
+    const config = merge(context.body as OpenAPI3)
+
+    config.openapi = '3.0.3'
+
+    const { paths = {} } = config
+
+    for (const path in paths) {
+      Object.entries(paths[path]).forEach(([method, operation]) => {
+        if ('tags' in operation) {
+          paths[path][method as any] = {
+            ...operation,
+            tags: operation.tags.slice(-1),
+          }
+        }
+      })
+    }
+
+    context.body = config
   })
 })
