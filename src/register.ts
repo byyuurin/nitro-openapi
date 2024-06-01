@@ -1,18 +1,18 @@
 import defu from 'defu'
 import type { OpenAPI3, ParameterObject, PathItemObject } from 'openapi-typescript'
-import type { MaybeReference, OpenApiRegisterConfig, PathOperationItem, PathOperations, ReferenceRef } from './types'
+import type { ApiRegisterOptions, MaybeReference, OperationType, PathOperation } from './types'
 
-export function createOpenApiRegister<T extends OpenApiRegisterConfig = OpenApiRegisterConfig>(
-  defaults: T,
+export function createOpenApiRegister<T extends ApiRegisterOptions = ApiRegisterOptions>(
+  options: T,
 ) {
-  const { paths = {}, components = {}, security = [], servers = [], info, tags = [] } = defaults
+  const { paths = {}, components = {}, security = [], servers = [], info, tags = [] } = options
 
-  const defineOperation = (operation: PathOperationItem<T>) => operation
+  const defineOperation = (operation: OperationType<T>) => operation
 
   function register(
     route: string,
-    routeOperation: MaybeReference<PathOperationItem<T>, ReferenceRef<T>>,
-    method: keyof PathOperations = 'get',
+    routeOperation: OperationType<T>,
+    method: keyof PathOperation = 'get',
   ) {
     const _route = normalizeRoute(route)
 
@@ -65,9 +65,9 @@ function normalizeRoute(_route: string) {
 
 function mergeConfig(
   defaults: Partial<OpenAPI3>,
-  appends: OpenApiRegisterConfig,
+  appends: ApiRegisterOptions,
 ): Partial<OpenAPI3> {
-  const methods = new Set<(keyof PathOperations)>(['delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace'])
+  const methods = new Set<(keyof PathOperation)>(['delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace'])
   const { info } = appends
   const { paths = {} } = defaults
 
@@ -79,7 +79,7 @@ function mergeConfig(
       continue
 
     paths[path] = Object.fromEntries(Object.entries(operations).map(([key, obj]) => {
-      if (methods.has(key as keyof PathOperations))
+      if (methods.has(key as keyof PathOperation))
         return [key, normalizeSchema(obj)]
 
       return [key, obj]

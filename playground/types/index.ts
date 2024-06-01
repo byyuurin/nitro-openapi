@@ -1,10 +1,10 @@
 import type {
+  ApiRegisterOptions,
   MaybeReference,
-  OpenApiRegisterConfig,
-  PathOperationItem,
-  PathOperationMethod,
-  ReferenceRef,
-  SchemaExtended,
+  OperationType,
+  PathOperation,
+  ReferenceType,
+  SchemaType,
 } from '@byyuurin/nitro-openapi'
 import type {
   SchemaObject,
@@ -20,8 +20,8 @@ export type ApiJsonResponse<T extends ApiJsonModel<unknown>> = Omit<T, T['data']
 
 export type ApiResponseModel<T> = Record<keyof T, SchemaObject>
 
-export interface ApiRouteMeta<ConfigT extends OpenApiRegisterConfig = OpenApiRegisterConfig> extends Omit<PathOperationItem<ConfigT>, 'responses'> {
+export interface ApiRouteMeta<T extends ApiRegisterOptions = ApiRegisterOptions> extends Omit<OperationType<T>, 'responses'> {
   /** @default "get" */
-  method?: PathOperationMethod
-  response?: MaybeReference<SchemaExtended<ReferenceRef<ConfigT>>, ReferenceRef<ConfigT>>
+  method?: keyof PathOperation
+  response?: MaybeReference<SchemaType<ReferenceType<T>>, ReferenceType<T>>
 }
