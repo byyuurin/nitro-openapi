@@ -58,9 +58,6 @@ export default defineNitroPlugin((nitro) => {
       body = body.replace(/(\s*)(url:\s"[^"]+")/, `${settings}${settings ? ',' : ''}$1$2`)
       // console.log(body.match(/(?:SwaggerUIBundle\(([^;]+)\))/)?.[1])
 
-      // wait for Nitro update
-      body = body.replace(/swagger-ui-dist@\^4/g, 'swagger-ui-dist@^5')
-
       context.body = body
       return
     }
