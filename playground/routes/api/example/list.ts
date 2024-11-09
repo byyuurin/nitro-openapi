@@ -10,7 +10,7 @@ interface ResponseType {
   status: boolean
 }
 
-defineApiRouteMeta<RequestType>(
+defineApiRouteMeta(
   '/api/example/list',
   {
     description: '# Search Example',

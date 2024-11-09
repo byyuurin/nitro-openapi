@@ -1,105 +1,65 @@
-import type { ArraySubtype, ObjectSubtype, SchemaObject } from 'openapi-typescript'
-import type { MaybeValueOrObject } from './types'
+import { defu } from 'defu'
+import type { ExampleDescription, SchemaObjectType } from './types'
 
-type SchemaObjectOptions = SchemaObject & {
-  allowExample?: boolean
-}
-
-export function resolveSchemaObject(
-  value: any,
-  options: SchemaObjectOptions = {},
-): SchemaObject {
-  const { allowExample = true, ...defaults } = options || {}
-
-  const resolveResult = (obj: SchemaObject, example?: unknown) => {
-    if (allowExample && example != null)
-      obj.example = example
-
-    return { ...defaults, ...obj }
-  }
-
-  if (Array.isArray(value)) {
-    return resolveResult(
-      {
-        type: 'array',
-        items: resolveSchemaObject(value[0], { allowExample: false }),
-      },
-      value,
-    )
-  }
-
-  const _type = typeof value
-
-  switch (_type) {
-    case 'function':
-    case 'symbol':
-    case 'undefined':
-      return { type: 'null' }
-    case 'object':
-      return resolveResult(
-        {
-          type: 'object',
-          properties: Object.fromEntries(Object.entries(value).map(([k, v]) => [
-            k,
-            resolveSchemaObject(v, {
-              allowExample: false,
-            }),
-          ])),
-        },
-        value,
-      )
-    case 'bigint':
-      return resolveResult(
-        { type: 'integer' },
-        value,
-      )
-    case 'string':
-      return resolveResult(
-        { type: 'string' },
-        value || null,
-      )
-    default:
-      return resolveResult(
-        { type: _type },
-        value,
-      )
-  }
-}
-
-type ExampleDescription<ExampleT> = MaybeValueOrObject<ExampleT, string>
-
-export function toExampleSchema<T = any>(
+export function toExampleSchema<T>(
   example: T,
-  description?: ExampleDescription<T>,
-  options?: SchemaObject,
-) {
-  if (typeof example !== 'object') {
-    return resolveSchemaObject(
-      example,
-      typeof description === 'string' ? { ...options, description } : {},
-    )
+  description: ExampleDescription<T> | undefined,
+  options: Partial<Omit<SchemaObjectType<T>, 'type' | 'example'> & { withExample?: boolean }> = {},
+): SchemaObjectType<T> {
+  const { withExample = true, ...overrides } = options
+
+  const createSchemaObject = <T extends SchemaObjectType<any>>(schema: T) => {
+    const merged: SchemaObjectType<any> = {
+      ...schema,
+      ...typeof description === 'string' && description !== '' ? { description } : {},
+      ...withExample ? { example } : {},
+      ...overrides,
+    }
+
+    return merged
   }
 
-  if (Array.isArray(example)) {
-    if (typeof description === 'string')
-      return resolveSchemaObject(example, { ...options, description })
+  let schema = createSchemaObject({
+    type: 'null',
+  })
 
-    const schema = resolveSchemaObject(example, { allowExample: false }) as SchemaObject & ArraySubtype
-    schema.items = toExampleSchema(example[0], description, options)
-
-    return schema
+  if (typeof example === 'number') {
+    schema = createSchemaObject({
+      type: 'number',
+    })
   }
 
-  if (typeof description === 'string')
-    return resolveSchemaObject(example, { ...options, description })
+  if (typeof example === 'string') {
+    schema = createSchemaObject({
+      type: 'string',
+    })
+  }
 
-  const schema = resolveSchemaObject(example, options) as SchemaObject & ObjectSubtype
+  if (typeof example === 'boolean') {
+    schema = createSchemaObject({
+      type: 'boolean',
+    })
+  }
 
-  schema.properties = Object.fromEntries(Object.entries(schema.properties!)
-    .map(([p, item]) => [p, {
-      ...item,
-      ...typeof description === 'object' ? { description: (description as any)?.[p] } : {},
-    }]))
+  if (typeof example === 'object' && example !== null) {
+    if (Array.isArray(example)) {
+      const value = typeof example[0] === 'object' ? defu({}, ...example) : example[0]
 
-  return schema
+      schema = createSchemaObject({
+        type: 'array',
+        items: toExampleSchema(value, typeof description === 'string' ? '' : description as any, { withExample: false }),
+      })
+    }
+    else {
+      schema = createSchemaObject({
+        type: 'object',
+        properties: Object.fromEntries(Object.entries(example).map(([k, v]) => {
+          const _description = typeof description === 'object' ? (description as any)[k] : description
+          return [k, toExampleSchema(v, _description, { withExample: false })]
+        })),
+      })
+    }
+  }
+
+  return schema as SchemaObjectType<T>
 }

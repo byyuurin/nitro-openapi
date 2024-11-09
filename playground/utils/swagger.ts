@@ -3,7 +3,7 @@ import type { configExtends } from '../plugins/swagger'
 import { defineOperation, register } from '../plugins/swagger'
 import type { ApiJsonModel, ApiJsonResponse, ApiRouteMeta } from '../types'
 
-export { resolveSchemaObject, toExampleSchema } from '@byyuurin/nitro-openapi'
+export { toExampleSchema } from '@byyuurin/nitro-openapi'
 
 export { defineOperation }
 

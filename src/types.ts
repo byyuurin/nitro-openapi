@@ -1,11 +1,35 @@
 import type {
+  ArraySubtype,
+  BooleanSubtype,
+  NullSubtype,
+  NumberSubtype,
+  ObjectSubtype,
   OpenAPI3,
   OperationObject,
   PathItemObject,
   ReferenceObject,
   SchemaObject,
   SecurityRequirementObject,
+  StringSubtype,
 } from 'openapi-typescript'
+
+export type SchemaSubType<T> = T extends number
+  ? NumberSubtype
+  : T extends string
+    ? StringSubtype
+    : T extends boolean
+      ? BooleanSubtype
+      : T extends Array<any>
+        ? ArraySubtype
+        : T extends Record<string, any>
+          ? ObjectSubtype
+          : NullSubtype
+
+export type SchemaObjectType<T> = Omit<SchemaObject, 'example'> & SchemaSubType<T> & { example?: T }
+
+export type ExampleDescription<T> = T extends (infer V)[]
+  ? SchemaObjectType<V> extends ObjectSubtype ? ({ [Key in keyof V]?: string } | string) : string
+  : SchemaObjectType<T> extends ObjectSubtype ? { [Key in keyof T]?: string } : string
 
 export type ReferenceType<T extends ApiRegisterOptions> = T extends { components: infer C }
   ? { [K in keyof C]: C[K] extends object ? `#/components/${K & string}/${keyof C[K] & string}` : never }[keyof C]

@@ -7,7 +7,7 @@ defineApiRouteMeta('/api/example/form', {
       in: 'query',
       description: 'File descriptions',
       allowEmptyValue: false,
-      schema: resolveSchemaObject(['upload some file'], {}),
+      schema: toExampleSchema(['upload some file'], ''),
     },
   ],
   requestBody: {
