@@ -1,6 +1,6 @@
 import defu from 'defu'
-import type { OpenAPI3, ParameterObject, PathItemObject } from 'openapi-typescript'
-import type { ApiRegisterOptions, MaybeReference, OperationType, PathOperation } from './types'
+import type { OpenAPI3, PathItemObject } from 'openapi-typescript'
+import type { ApiRegisterOptions, OperationType, PathOperation } from './types'
 
 export function createOpenApiRegister<T extends ApiRegisterOptions = ApiRegisterOptions>(
   options: T,
@@ -14,12 +14,12 @@ export function createOpenApiRegister<T extends ApiRegisterOptions = ApiRegister
     routeOperation: OperationType<T>,
     method: keyof PathOperation = 'get',
   ) {
-    const _route = normalizeRoute(route)
+    const path = normalizeRoute(route)
 
-    paths[_route] = defu(
-      { [method]: routeOperation },
-      paths[_route],
-    )
+    paths[path] = {
+      ...paths[path],
+      [method]: routeOperation,
+    }
   }
 
   function merge(config: Partial<OpenAPI3>) {
@@ -67,42 +67,34 @@ function mergeConfig(
   defaults: Partial<OpenAPI3>,
   appends: ApiRegisterOptions,
 ): Partial<OpenAPI3> {
-  const methods = new Set<(keyof PathOperation)>(['delete', 'get', 'head', 'options', 'patch', 'post', 'put', 'trace'])
   const { info } = appends
-  const { paths = {} } = defaults
+  const { openapi, servers, security, tags, paths = {} } = defaults
 
-  // fix path parameter validation until removed after nitro updates
   for (const path in paths) {
     const operations = paths[path]
+    const operationsAppend = appends.paths?.[path] ?? {}
+
+    if ('$ref' in operationsAppend) {
+      paths[path] = operationsAppend
+      continue
+    }
 
     if ('$ref' in operations)
       continue
 
-    paths[path] = Object.fromEntries(Object.entries(operations).map(([key, obj]) => {
-      if (methods.has(key as keyof PathOperation))
-        return [key, normalizeSchema(obj)]
-
-      return [key, obj]
+    paths[path] = Object.fromEntries(Object.entries(operations).map(([method, operation]) => {
+      const extendOperation = operationsAppend[method as keyof PathItemObject] ?? {}
+      return [method, defu(operation, extendOperation)]
     }))
   }
 
-  return defu({ info }, defaults, appends)
-}
-
-function normalizeSchema(obj: MaybeReference<PathItemObject>) {
-  if ('$ref' in obj)
-    return obj
-
-  const { parameters = [] } = obj
-
-  obj.parameters = parameters.map((p) => {
-    if ('$ref' in p)
-      return p
-
-    return defu(p, {
-      schema: { type: 'string' },
-    } satisfies Partial<ParameterObject>)
-  })
-
-  return obj
+  return {
+    openapi,
+    info,
+    servers,
+    security,
+    tags,
+    ...defu(defaults, appends),
+    paths,
+  }
 }
