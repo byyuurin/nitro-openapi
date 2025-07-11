@@ -1,4 +1,4 @@
-defineApiRouteMeta('/api/example/form', {
+defineApiResponse('/api/example/form', {
   method: 'post',
   summary: 'Create data (multipart/form-data)',
   parameters: [

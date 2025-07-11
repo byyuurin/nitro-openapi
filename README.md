@@ -64,7 +64,7 @@ type RouteMeta = OperationType<typeof configExtends> & {
   method?: keyof PathOperation
 }
 
-export function defineApiRouteMeta(
+export function defineApiResponse(
   route: keyof InternalApi,
   meta: RouteMeta,
 ) {
@@ -78,7 +78,7 @@ Then use the register
 ```ts
 // route/**/*.ts
 
-defineApiRouteMeta('/api/...', {
+defineApiResponse('/api/...', {
   /* ... */
 })
 

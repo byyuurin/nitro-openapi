@@ -15,7 +15,7 @@ export function createApiResponse<DataT = undefined>(
   return { code, message, data } as any
 }
 
-export function defineApiRouteMeta(
+export function defineApiResponse(
   route: keyof InternalApi,
   options: ApiRouteMeta<typeof configExtends> = {},
 ) {

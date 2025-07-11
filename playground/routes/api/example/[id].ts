@@ -4,7 +4,7 @@ interface ResponseType {
   status: boolean
 }
 
-defineApiRouteMeta(
+defineApiResponse(
   '/api/example/:id',
   {
     description: '# GET Example',

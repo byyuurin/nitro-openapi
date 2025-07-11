@@ -1,4 +1,4 @@
-defineApiRouteMeta(
+defineApiResponse(
   '/api/example/:id',
   {
     method: 'delete',
